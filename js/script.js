@@ -29,10 +29,27 @@ const toast = qs('#toast');
 const btnHamburger = qs('#btn-hamburger');
 const mobileNav = qs('#mobile-nav');
 const yearEl = qs('#year');
+const contactWhatsapp = qs('#contact-whatsapp');
+const footerWhatsapp = qs('#footer-whatsapp');
+const footerInstagram = qs('#footer-instagram');
+
+function setBusinessLinks(){
+  if(contactWhatsapp){
+    contactWhatsapp.href = `https://wa.me/${businessConfig.whatsappNumber}`;
+    contactWhatsapp.setAttribute('aria-label', 'WhatsApp contact');
+  }
+  if(footerWhatsapp){
+    footerWhatsapp.href = `https://wa.me/${businessConfig.whatsappNumber}`;
+  }
+  if(footerInstagram){
+    footerInstagram.href = businessConfig.instagramUrl || '#';
+  }
+}
 
 // Initialize
 function init(){
   yearEl.textContent = new Date().getFullYear();
+  setBusinessLinks();
   renderProducts();
   loadCart();
   bindUI();
@@ -107,14 +124,19 @@ function bindUI(){
   });
 
   // Mobile menu
+  const setMenuState = (isOpen) => {
+    mobileNav.style.display = isOpen ? 'block' : 'none';
+    mobileNav.setAttribute('aria-hidden', String(!isOpen));
+    btnHamburger.setAttribute('aria-expanded', String(isOpen));
+  };
+
   btnHamburger.addEventListener('click', ()=>{
-    const open = mobileNav.getAttribute('aria-hidden') === 'false';
-    mobileNav.setAttribute('aria-hidden', String(open));
-    mobileNav.style.display = open ? 'none' : 'block';
+    const isOpen = mobileNav.getAttribute('aria-hidden') === 'true';
+    setMenuState(isOpen);
   });
 
   // Smooth close when nav link clicked
-  mobileNav.addEventListener('click', (e)=>{ if(e.target.tagName==='A'){ mobileNav.style.display='none'; mobileNav.setAttribute('aria-hidden','true'); } });
+  mobileNav.addEventListener('click', (e)=>{ if(e.target.tagName==='A'){ setMenuState(false); } });
 
   // FAQ accordion
   qsa('.faq-question').forEach(btn =>{
